@@ -1,0 +1,13 @@
+use_frameworks!
+
+platform :ios, '10.0'
+
+target 'WMCLib_Example' do
+  pod 'WMCLib', :path => '../'
+
+  target 'WMCLib_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
