@@ -7,15 +7,58 @@
 //
 
 import UIKit
+import WMCLib
+
+//MARK: Classes FAKE para testar DI
+protocol ViewModelFakeProtocol { }
+final class ViewModelFake {
+    init() { }
+}
+extension ViewModelFake: ViewModelFakeProtocol { }
+
+protocol ServiceFakeProtocol {}
+final class ServiceFake {
+    private let urlSession: URLSession
+    init(urlSession: URLSession) {
+        self.urlSession = urlSession
+    }
+}
+extension ServiceFake: ServiceFakeProtocol { }
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
+    private func registerDependency() {
+        
+        let serviceLocator: WMCServiceLocatorProtocol = WMCServiceLocator.shared
+        
+        //Registry ViewModelFake
+        serviceLocator.register(instance: ViewModelFake.init(), forMetaType: ViewModelFakeProtocol.self)
+        //Registry URLSession
+        serviceLocator.register(instance: URLSession.shared, forMetaType: URLSession.self)
+        //Registry ServiceFake
+        serviceLocator.register(
+            factory: { resolver in
+                let session: URLSession = resolver.autoResolve()
+                return ServiceFake(urlSession: session)
+            },
+            forMetaType: ServiceFakeProtocol.self
+        )
+        
+        //Recup ViewModelFake
+        let _: ViewModelFakeProtocol = serviceLocator.resolver(ViewModelFakeProtocol.self)
+        //Recup ServiceFake
+        let _: ServiceFakeProtocol = serviceLocator.autoResolve()
+    }
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        self.registerDependency()
+        
         return true
     }
 

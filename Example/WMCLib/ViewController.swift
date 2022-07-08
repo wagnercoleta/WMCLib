@@ -7,12 +7,14 @@
 //
 
 import UIKit
+import WMCLib
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        view.backgroundColor = UIColor(hex: "#F58300")
     }
 
     override func didReceiveMemoryWarning() {
